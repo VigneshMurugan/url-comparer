@@ -10,7 +10,9 @@ interface  compareOptions {
 	ignorePath?: boolean;
 	ignoreProtocol?: boolean;
 	ignoreSearchParams?: boolean;
-	ignorePort?: boolean;
+    ignorePort?: boolean;
+    ignoreSearchParamCase?: boolean;
+    ignoreTrailingURLSlash?: boolean;
 }
 ```
 

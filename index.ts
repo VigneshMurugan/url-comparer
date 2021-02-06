@@ -10,9 +10,11 @@ interface compareOptions {
     ignoreProtocol?: boolean;
     ignoreSearchParams?: boolean;
     ignorePort?: boolean;
+    ignoreSearchParamCase?: boolean;
+    ignoreTrailingURLSlash?: boolean;
 }
 
-const extractURLSearchParams = (url: URL) => {
+const extractURLSearchParams = (url: URL, caseInsensitiveKey: boolean = false) => {
     const search = url.searchParams;
     const paramMap: Metadata  = {}; 
 
@@ -21,7 +23,8 @@ const extractURLSearchParams = (url: URL) => {
     });
 
     return Object.keys(paramMap).sort().reduce((acc: Metadata, current: string) => {
-        acc[current] = paramMap[current]
+        const key = caseInsensitiveKey ? current.toLowerCase() : current;
+        acc[key] = paramMap[current]
         return acc;
     }, {})
 }
@@ -30,7 +33,7 @@ const extractHost = (url: URL) => url.host;
 
 const extractProtocol = (url: URL) => url.protocol;
 
-const extractPath = (url: URL) => url.pathname;
+const extractPath = (url: URL, ignoreTrailingURLSlash = false) => ignoreTrailingURLSlash ? url.pathname.replace(/\/$/, "") : url.pathname;
 
 const extractPort = (url: URL) => url.port;
 
@@ -41,7 +44,7 @@ export const urlCompare = (url1: string, url2: string, options: compareOptions =
         const secondURL = new URL(url2);
 
         //check search params equality
-        if(!options.ignoreSearchParams && !isEqual(extractURLSearchParams(firstURL), extractURLSearchParams(secondURL)))
+        if(!options.ignoreSearchParams && !isEqual(extractURLSearchParams(firstURL, options.ignoreSearchParamCase), extractURLSearchParams(secondURL, options.ignoreSearchParamCase)))
             return false;
 
         //check protocol
@@ -53,7 +56,7 @@ export const urlCompare = (url1: string, url2: string, options: compareOptions =
             return false;
 
         //check path
-        if(!options.ignorePath && !isEqual(extractPath(firstURL), extractPath(secondURL)))
+        if(!options.ignorePath && !isEqual(extractPath(firstURL, options.ignoreTrailingURLSlash), extractPath(secondURL, options.ignoreTrailingURLSlash)))
             return false;
         
         //check port
