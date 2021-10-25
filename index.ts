@@ -4,7 +4,7 @@ interface Metadata {
     [k: string]: string;
 }
 
-interface compareOptions {
+export interface compareOptions {
     ignoreHost?: boolean;
     ignorePath?: boolean;
     ignoreProtocol?: boolean;
